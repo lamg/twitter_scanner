@@ -1,0 +1,10 @@
+#+title: Why twitter_scanner?
+
+* Why ~twitter_scanner~?
+- ~twitter_scanner~ is born from curiosity and cultural background
+- Since 2008 [[https://twitter.com/yoanisanchez][Yoani Sánchez]] has been using Twitter as a means to escape from the information prison which the Cuban government (CG) forces everyone under its power.
+- CG strongly opposed to Twitter usage in those days. But time changed its strategy.
+- CG dedicates significant resources to spread its propaganda on social media.
+- CG is a black box regarding the usage of resources, which should be public, but in practice only serve a small number of people in power and close to it.
+- ~twitter_scanner~ can be used to make more transparent CG's propaganda machine.
+- ~twitter_scanner~ it's a good playground for making experiments on database design and service deployment.

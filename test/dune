@@ -1,0 +1,9 @@
+(tests
+ (names request_test)
+ (package twitter_scanner)
+ (action (run %{test} -v))
+ (libraries alcotest twitter_scanner))
+
+(env
+  (dev
+    (flags (:standard -warn-error -A))))

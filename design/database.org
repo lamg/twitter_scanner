@@ -1,0 +1,99 @@
+#+title: Database
+
+* Tables without ~NULL~ value
+
+Let's say we want to store tweets in a table. So far we know some tweets are originals, and others are just retweets. An example tweet can be the following:
+
+#+begin_src js
+{
+ "id": "292939484",
+ "author_id": "3939393929",
+ "created_at": "2022-12-08T22:11:39.000Z"
+ "text": "this is the tweet's content"
+ "referenced_tweets": [{"id": "29292929", "type": "retweet"}]
+}
+#+end_src
+
+In this case it's a retweet, so storing its text would be a waste of space. We have the following points to address:
+- store a tweet
+- store the text if it's an original tweet
+- do not store the text if it's a retweet, in that case just store the ID of the retweeted tweet.
+
+The conventional solution for this would be:
+
+#+begin_src sql
+CREATE TABLE tweet(
+ id TEXT NOT NULL,
+ author_id TEXT NOT NULL,
+ created_at TEXT NOT NULL,
+ text TEXT,
+ retweeted_id TEXT
+);
+#+end_src
+
+Thus an original tweet and one of its retweets would be represented by the following rows:
+
+|       id | author_id | created_at               | text                        | retweeted_id |
+| 29292929 |  29292929 | 2022-12-08T22:11:39.000Z | this is the tweet's content | NULL         |
+| 39393939 |  19110102 | 2022-12-09T22:11:39.000Z | NULL                        | 29292929     |
+
+
+However my solution for this is avoiding ~NULL~ values, with the following
+
+#+begin_src sql
+CREATE TABLE base_tweet(
+  id TEXT NOT NULL,
+  author_id TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  UNIQUE(id)
+);
+
+CREATE TABLE original_tweet(
+  id TEXT NOT NULL,
+  tweet_text TEXT NOT NULL,
+  UNIQUE(id)
+);
+
+CREATE TABLE reference_tweet(
+  id TEXT NOT NULL,
+  ref_tweet_id TEXT NOT NULL,
+  ref_type TEXT NOT NULL,
+  UNIQUE(tweet_id)
+);
+#+end_src
+
+This way for all tweets a row is inserted in ~base_tweet~.
+- In case it's an original tweet then also a row is inserted in ~original_tweet~ with the same ~id~ inserted in ~base_tweet~.
+- In case it's a retweet a row is inserted in ~reference_tweet~ with the same ~id~ inserted in ~base_tweet~.
+
+~original_tweet~ and ~reference_tweet~ contain the particularly known information for original tweets and retweets respectively. ~base_tweet~ contains the information common to both tweet types.
+
+In order to consume the information splitted in the above tables, one can rely on views like this:
+
+#+begin_src sql
+CREATE VIEW latest_10_retweets AS
+SELECT o.tweet_text,
+       b.created_at
+FROM original_tweet o,
+     base_tweet b,
+     reference_tweet r
+WHERE o.id = r.ref_tweet_id
+  AND o.id = b.id
+ORDER BY b.created_at DESC
+LIMIT 10;
+#+end_src
+
+Notice the fact we consume information in this aggregated form, doesn't imply we have to store it in the same way we consume it.
+
+* The argument against ~NULL~
+
+The argument against ~NULL~ values is the following:
+- It is not needed for representing unknown data.
+- Using it requires relying on [[https://en.wikipedia.org/wiki/Three-valued_logic][three-valued logic]] to understand the results of queries. In my own experience people only remember SQL uses three-valued logic only when a query starts to fail. That means errors are introduced by default and then some ad-hoc fixes appear, but the root cause is never addressed.
+- Even if you manage to analyze queries with three-valued logic, there are some cases where real-world situations are misrepresented by it. [[https://www.oreilly.com/library/view/sql-and-relational/9781449319724/ch04s04.html][Here's an example]].
+
+Inspired in the above example is easy to create more misrepresentations:
+- Let's say ~city = NULL~, which means we don't know the city
+- ~city = 'Paris' OR city <> 'Paris' = NULL~ according three-valued logic,
+  however according our knowledge of the concept /city/, a city is either Paris or not, therefore the right result would be ~TRUE~.
+- Bottom line: even if we don't know something, when we put together some unknowns in the same expression we might end in something known, but three-valued logic doesn't reflect it.

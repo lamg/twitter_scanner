@@ -1,0 +1,14 @@
+#+title: Layered IO
+
+* Summary
+
+We dream about writing components that solve particular problems but are reusable in many places. It's the old dream of program composability. A well known book on the subject is [[https://en.wikipedia.org/wiki/Design_Patterns][Design Patterns]], however each community, regardless of the paradigm they choose has its own approach to program composability. For example, in the functional programming world the ideas showed in [[https://github.com/hmemcpy/milewski-ctfp-pdf][Category Theory for Programmers]] also touch the same subject. In 1966 appeared the [[https://en.wikipedia.org/wiki/APL_(programming_language)][APL]] language, with features that even today (2022) look mindblowing.
+
+I believe we can help ourselves on the composability issue without reading those books right now. There are some well known and easy to state truths:
+- Input/Output (IO) infects our components making them non-composable.
+- IO can be decoupled from the remaining components.
+- IO is performed through well known interfaces like HTTP and Relational Databases, which are used in this project, and thus decoupling is, at least in the beginning, straightforward.
+
+With the above in mind, this project relies on the [[https://github.com/lamg/io_layer][io_layer]] library. So far the interfaces defined there just hide the IO under functions which can be replaced by pure ones. However an interesting idea is to create layers of code following these points:
+- an upper layer generates values that a below layer consumes without returning the execution flow to the domain of upper layer.
+- continuation passing style could be helpful in that case.

@@ -1,0 +1,40 @@
+#+title: Queries
+
+* Profiles
+
+The newest 10 profiles:
+
+#+begin_src sqlite :db ./db.sqlite3
+select * from profile order by created_at desc limit 10
+#+end_src
+
+#+RESULTS:
+
+The next profiles to be retrieved by IDs
+
+#+begin_src sqlite :db ./db.sqlite3
+select * from update_profile_batch limit 10
+#+end_src
+
+* Latest scan
+
+#+begin_src sqlite :db ./db.sqlite3
+select q.tweet_query, max(s.scan_date), s.amount
+from scanning s, query q
+where s.query_id = q.id
+group by s.query_id
+order by amount desc
+#+end_src
+
+Latest 10 tweets
+#+begin_src sqlite :db ./db.sqlite3
+select * from base_tweet order by created_at desc limit 10;
+#+end_src
+
+* Failure report
+
+#+begin_src sqlite :db ./db.sqlite3
+select * from failed_request order by performed_at desc limit 10;
+#+end_src
+
+#+RESULTS:

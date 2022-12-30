@@ -1,0 +1,4 @@
+(executable
+ (public_name twitter_scanner)
+ (name main)
+ (libraries twitter_scanner io_layer))
