@@ -18,6 +18,7 @@ depends: [
   "ppx_yojson_conv"
   "io_layer"
   "caqti-driver-sqlite3"
+  "ppx_rapper"
   "odoc" {with-doc}
 ]
 build: [

@@ -20,7 +20,7 @@
  (synopsis "Twitter scanner")
  (description "Scans tweets by query and author")
  (depends ocaml dune yojson sqlite3 ppx_deriving
-          ppx_yojson_conv io_layer caqti-driver-sqlite3)
+          ppx_yojson_conv io_layer caqti-driver-sqlite3 ppx_rapper)
  (tags
   (topics Twitter HTTP client)))
 
