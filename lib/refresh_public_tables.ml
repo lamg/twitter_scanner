@@ -6,7 +6,7 @@ let populate_tweets_by_query ctx =
       {sql|
       WITH qt AS (SELECT tweet_query, total FROM tweets_by_query_view)
       UPDATE tweets_by_query SET total = qt.total
-      FROM qt WHERE tweet_query = qt.tweet_query|sql}]
+      FROM qt WHERE tweets_by_query.tweet_query = qt.tweet_query|sql}]
     ()
   |> do_query ctx.db_ctx.db_uri
 ;;
