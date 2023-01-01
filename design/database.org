@@ -89,7 +89,7 @@ Notice the fact we consume information in this aggregated form, doesn't imply we
 
 The argument against ~NULL~ values is the following:
 - It is not needed for representing unknown data.
-- Using it requires relying on [[https://en.wikipedia.org/wiki/Three-valued_logic][three-valued logic]] to understand the results of queries. In my own experience people only remember SQL uses three-valued logic only when a query starts to fail. That means errors are introduced by default and then some ad-hoc fixes appear, but the root cause is never addressed.
+- Using it requires relying on [[https://en.wikipedia.org/wiki/Three-valued_logic][three-valued logic]] to understand the results of queries. In my own experience people only remember SQL uses three-valued logic when a query starts to fail. That means errors are introduced by default and then some ad-hoc fixes appear, but the root cause is never addressed.
 - Even if you manage to analyze queries with three-valued logic, there are some cases where real-world situations are misrepresented by it. [[https://www.oreilly.com/library/view/sql-and-relational/9781449319724/ch04s04.html][Here's an example]].
 
 Inspired in the above example is easy to create more misrepresentations:

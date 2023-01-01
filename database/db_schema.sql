@@ -34,6 +34,11 @@ CREATE TABLE reference_tweet (
   UNIQUE (id)
 );
 
+CREATE TABLE tweet_source(
+id TEXT NOT NULL,
+source TEXT NOT NULL
+);
+
 --
 -- record of scans section
 -- how many tweets returned a query at a point in time
@@ -139,3 +144,58 @@ CREATE TABLE token (
   ref_date text NOT NULL,
   UNIQUE (id)
 );
+
+-- frontend data
+
+CREATE VIEW tweets_by_query_view AS
+SELECT q.tweet_query, count(t.tweet_id) AS total
+FROM query_tweet t, query q
+WHERE q.id = t.query_id
+GROUP BY q.id
+ORDER BY total DESC;
+
+CREATE TABLE tweets_by_query(tweet_query TEXT NOT NULL, total INTEGER NOT NULL);
+
+CREATE VIEW query_authors_by_age_view AS
+SELECT
+  q.tweet_query,
+  CAST(
+    AVG(julianday('now') - julianday(p.created_at)) AS INTEGER
+  ) AS age
+FROM
+  profile p,
+  base_tweet t,
+  query_tweet qt,
+  query q
+WHERE
+  p.id = t.author_id and qt.tweet_id = t.id and q.id = qt.query_id
+GROUP BY
+  qt.query_id
+ORDER BY
+  age DESC;
+
+CREATE TABLE query_authors_by_age(query TEXT NOT NULL, age_in_days INTEGER NOT NULL);
+
+-- indexes
+CREATE INDEX IF NOT EXISTS query_id ON query(id);
+
+CREATE INDEX IF NOT EXISTS query_tweet_tweet_id ON query_tweet(tweet_id);
+
+CREATE INDEX IF NOT EXISTS base_tweet_id_index ON base_tweet(id);
+CREATE INDEX IF NOT EXISTS base_tweet_created_at_index ON base_tweet(created_at);
+
+CREATE INDEX IF NOT EXISTS original_tweet_id ON original_tweet(id);
+
+CREATE INDEX IF NOT EXISTS reference_tweet_id ON reference_tweet(id);
+CREATE INDEX IF NOT EXISTS reference_tweet_reference_id ON reference_tweet(reference_id);
+
+
+CREATE INDEX IF NOT EXISTS scanning_scan_date ON scanning(scan_date);
+CREATE INDEX IF NOT EXISTS scanning_query_id ON scanning(query_id);
+
+
+CREATE INDEX IF NOT EXISTS profile_id ON profile(id);
+CREATE INDEX IF NOT EXISTS profile_created_at ON profile(created_at);
+
+
+CREATE INDEX IF NOT EXISTS profile_id ON profile_location(profile_id);

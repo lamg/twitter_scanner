@@ -33,5 +33,6 @@ let () =
   let ctx = Request.main_ctx time_ctx db_ctx http_ctx in
   Scan_hashtags.main ctx;
   Scan_users_timeline.main ctx;
-  Scan_users.main ctx
+  Scan_users.main ctx;
+  Refresh_public_tables.main ctx
 ;;
