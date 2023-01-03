@@ -37,7 +37,10 @@ let insert_scanning ctx ~query_id ~len =
       {sql|
 INSERT INTO scanning(query_id, scan_date, amount)
 VALUES (%int64{query_id}, %string{scan_date}, %int{len})
-|sql}]
+ON CONFLICT DO
+UPDATE SET scan_date=%string{scan_date}, amount=%int{len}
+WHERE query_id=%int64{query_id}
+      |sql}]
     ~query_id
     ~scan_date:(ctx.time_ctx.now_str ())
     ~len

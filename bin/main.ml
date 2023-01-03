@@ -11,7 +11,7 @@ let spec_list =
 let usage_msg =
   {|
 SYNOPSIS
-Scans tweets by hashtags, profiles and Twitter profiles
+Scans tweets by hashtags, profiles and timelines
 
 REQUIREMENTS
 - SQlite3 database with the schema defined at db_schema.sql

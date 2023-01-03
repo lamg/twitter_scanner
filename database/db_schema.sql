@@ -45,7 +45,8 @@ source TEXT NOT NULL
 CREATE TABLE scanning (
   query_id integer NOT NULL,
   scan_date text NOT NULL,
-  amount integer NOT NULL
+  amount integer NOT NULL,
+  UNIQUE(query_id)
 );
 
 --
