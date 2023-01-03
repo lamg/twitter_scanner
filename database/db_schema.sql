@@ -155,7 +155,6 @@ WHERE q.id = t.query_id
 GROUP BY q.id
 ORDER BY total DESC;
 
-CREATE TABLE tweets_by_query(tweet_query TEXT NOT NULL, total INTEGER NOT NULL);
 
 CREATE VIEW query_authors_by_age_view AS
 SELECT
@@ -174,8 +173,6 @@ GROUP BY
   qt.query_id
 ORDER BY
   age DESC;
-
-CREATE TABLE query_authors_by_age(query TEXT NOT NULL, age_in_days INTEGER NOT NULL);
 
 -- indexes
 CREATE INDEX IF NOT EXISTS query_id ON query(id);
