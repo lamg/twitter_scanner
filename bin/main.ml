@@ -26,8 +26,12 @@ REQUIREMENTS
 ;;
 
 let db_uri uri =
-  UnixLabels.getenv "PWD"
-  |> fun pwd -> Printf.sprintf "sqlite3://%s/%s" pwd uri |> Uri.of_string
+  (if String.is_prefix uri ~prefix:"/"
+  then Printf.sprintf "sqlite3://%s" uri
+  else
+    UnixLabels.getenv "PWD"
+    |> fun pwd -> Printf.sprintf "sqlite3://%s/%s" pwd uri)
+  |> Uri.of_string
 ;;
 
 let () =
