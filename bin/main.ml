@@ -3,14 +3,16 @@ open Twitter_scanner
 open Io_layer
 
 let db_file = ref "db.sqlite3"
-let reports_db = ref ""
+let reports_db = ref "reports.sqlite3"
+let slow_reports = ref false
+let fast_reports = ref false
 
 let spec_list =
   [ "--db", Arg.Set_string db_file, "database file (db.sqlite3 by default)"
-  ; ( "--make-reports"
-    , Arg.Set_string reports_db
-    , "write reports if a reports database file is provided" )
-  ]
+  ; "--reports-db", Arg.Set_string reports_db, "reports database"
+  ; "--slow-reports", Arg.Set slow_reports, "executes the slow reports"
+  ; "--fast-reports", Arg.Set fast_reports, "executes the fast reports"
+    ]
 ;;
 
 let usage_msg =
@@ -37,15 +39,15 @@ let db_uri uri =
 let () =
   let () = Arg.parse spec_list (const ()) usage_msg in
   let db_ctx = Db.main_ctx (db_uri !db_file) in
-  match !reports_db with
-  | "" ->
+  let reports_db_ctx = Db.main_ctx (db_uri !reports_db) in
+  match !slow_reports, !fast_reports with
+  | false,false ->
     let time_ctx = Time.main_ctx in
     let http_ctx = Http.main_ctx in
     let ctx = Request.main_ctx time_ctx db_ctx http_ctx in
     Scan_hashtags.main ctx;
     Scan_users_timeline.main ctx;
     Scan_users.main ctx
-  | _ ->
-    let reports_db_ctx = Db.main_ctx (db_uri !reports_db) in
-    Reports.main db_ctx reports_db_ctx
+  | true, _ -> Reports.slow_reports db_ctx reports_db_ctx
+  | _, true -> Reports.fast_reports db_ctx reports_db_ctx
 ;;
