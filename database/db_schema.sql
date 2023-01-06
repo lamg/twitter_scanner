@@ -78,7 +78,6 @@ CREATE TABLE profile (
   name text NOT NULL,
   created_at text NOT NULL,
   username text NOT NULL,
-  location text NOT NULL,
   UNIQUE (id)
 );
 
@@ -174,6 +173,25 @@ GROUP BY
 ORDER BY
   age DESC;
 
+CREATE VIEW base_tweet_query AS
+SELECT t.id AS tweet_id, t.author_id, t.created_at, q.id AS query_id , q.tweet_query FROM
+base_tweet t, query_tweet qt, query q
+WHERE q.id = qt.query_id AND qt.tweet_id = t.id;
+
+CREATE TABLE watched_profile_creation_by_query (query_id INTEGER NOT NULL);
+
+CREATE VIEW profiles_created_by_query AS
+SELECT
+t.tweet_query,
+cast(strftime('%Y',date(p.created_at)) AS INTEGER) AS year,
+cast(strftime('%m',date(p.created_at)) AS INTEGER) AS month,
+count(p.id) AS total
+FROM base_tweet_query t, profile p, watched_profile_creation_by_query w
+WHERE t.query_id = w.query_id AND p.id = t.author_id
+GROUP BY w.query_id, year, month
+ORDER BY w.query_id, year, month ASC;
+
+
 -- indexes
 CREATE INDEX IF NOT EXISTS query_id ON query(id);
 
@@ -189,7 +207,7 @@ CREATE INDEX IF NOT EXISTS reference_tweet_reference_id ON reference_tweet(refer
 
 
 CREATE INDEX IF NOT EXISTS scanning_scan_date ON scanning(scan_date);
-CREATE INDEX IF NOT EXISTS scanning_query_id ON scanning(query_id);
+CREATE INDEX IF NOT EXISTS scanning_query_id ON scanning(id_query);
 
 
 CREATE INDEX IF NOT EXISTS profile_id ON profile(id);

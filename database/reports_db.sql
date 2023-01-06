@@ -23,3 +23,11 @@ scanned_at TEXT NOT NULL,
 amount INTEGER NOT NULL,
 UNIQUE(tweet_query)
 );
+
+CREATE TABLE profiles_created_by_query(
+tweet_query TEXT NOT NULL,
+month INTEGER NOT NULL,
+year INTEGER NOT NULL,
+amount INTEGER NOT NULL,
+UNIQUE(tweet_query,month,year)
+);
